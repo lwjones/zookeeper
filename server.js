@@ -7,6 +7,7 @@ const app = express();
 // `extended` checks for nested / sub-array data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());  // parse incoming JSON
+app.use(express.static('public'));  // make static resources
 
 const { animals } = require('./data/animals');
 
@@ -115,11 +116,30 @@ app.post('/api/animals', (req, res) => {
     res.status(400).send('The animal is not properly formatted.');
   } else {
     // add animal to json file and animals array in this function
-    const animal = createAnimal(req.body, animals);
+    const animal = createNewAnimal(req.body, animals);
     res.json(animal)
   }
 });
 
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+
+app.get('/animals', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+
+app.get('/zookeepers', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
 
 app.listen(PORT, () => {
   console.log(`API server now on port ${PORT}!`);
